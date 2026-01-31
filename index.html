@@ -3,25 +3,26 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
 <title>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</title>
 
+<!-- libs -->
 <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
 <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
 :root{
-  --pink:#ffdae0;
   --red:#e60023;
 }
 
+/* ===== Base ===== */
 body{
   font-family:-apple-system,BlinkMacSystemFont,sans-serif;
   margin:0;
   background:#fff;
 }
 
-/* HEADER */
 header{
   text-align:center;
   padding:28px;
@@ -29,7 +30,7 @@ header{
   font-weight:bold;
 }
 
-/* GRID */
+/* ===== Grid ===== */
 .grid{
   margin:0 auto;
   visibility:hidden;
@@ -40,13 +41,12 @@ header{
   margin-bottom:20px;
   border-radius:16px;
   overflow:hidden;
-  background:#fff;
-  cursor:zoom-in;
+  cursor:pointer;
   box-shadow:0 2px 8px rgba(0,0,0,.1);
   transition:.25s;
 }
 .grid-item:hover{
-  transform:translateY(-3px);
+  transform:translateY(-4px);
 }
 
 .grid-item img{
@@ -54,95 +54,72 @@ header{
   display:block;
 }
 
-/* LOADING */
+/* ===== Loading ===== */
 .loading{
   text-align:center;
   padding:40px;
   font-size:18px;
 }
 
-/* MODAL */
-#modal-overlay{
+/* ===== Modal ===== */
+#modal{
   position:fixed;
   inset:0;
   display:none;
   justify-content:center;
   align-items:center;
   background:rgba(0,0,0,.7);
-  backdrop-filter:blur(5px);
+  backdrop-filter:blur(6px);
   z-index:999;
 }
 
-.modal-content{
+.modal-box{
   width:90%;
   max-width:900px;
   max-height:90vh;
-  background:#fff;
-  border-radius:32px;
+  background:white;
+  border-radius:30px;
   display:flex;
   overflow:hidden;
-  animation:fade .25s ease;
   position:relative;
-}
-
-@keyframes fade{
-  from{opacity:0;transform:scale(.9)}
-  to{opacity:1;transform:scale(1)}
 }
 
 .modal-left{
   flex:1.2;
   background:#000;
-  display:flex;
-  align-items:center;
 }
 
 .modal-left img{
   width:100%;
+  height:100%;
   object-fit:contain;
 }
 
 .modal-right{
   flex:1;
-  padding:36px;
+  padding:32px;
   overflow:auto;
 }
 
-.modal-title{
-  font-size:22px;
-  font-weight:bold;
-}
-
-.modal-desc{
-  margin-top:15px;
-  color:#333;
-  line-height:1.6;
-}
-
-.close-btn{
+.close{
   position:absolute;
-  top:18px;
-  right:22px;
+  right:20px;
+  top:16px;
   font-size:30px;
   cursor:pointer;
 }
 
-/* LIKE BUTTON */
-.btn-like-large{
+.btn-like{
   background:var(--red);
   color:white;
   border:none;
   padding:12px 22px;
-  border-radius:24px;
-  font-weight:bold;
+  border-radius:25px;
   cursor:pointer;
-  transition:.2s;
-}
-.btn-like-large.liked{
-  background:#ff4b6e;
+  font-weight:bold;
 }
 
-/* TOAST */
+/* ===== Toast ===== */
 .toast{
   position:fixed;
   bottom:20px;
@@ -150,17 +127,13 @@ header{
   transform:translateX(-50%);
   background:#333;
   color:white;
-  padding:10px 18px;
+  padding:10px 16px;
   border-radius:20px;
   opacity:0;
   transition:.3s;
 }
 .toast.show{
   opacity:1;
-}
-
-@media(max-width:700px){
-  .modal-content{flex-direction:column}
 }
 </style>
 </head>
@@ -169,68 +142,86 @@ header{
 
 <header>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</header>
 
-<div id="loading" class="loading">Loading images...</div>
-<div class="grid" id="main-grid"></div>
+<div id="loading" class="loading">Loading...</div>
+<div id="grid" class="grid"></div>
 
-<!-- MODAL -->
-<div id="modal-overlay">
-  <span class="close-btn">&times;</span>
-  <div class="modal-content">
+<!-- Modal -->
+<div id="modal">
+  <div class="modal-box">
+    <span class="close">&times;</span>
     <div class="modal-left">
-      <img id="modal-img">
+      <img id="m-img">
     </div>
-
     <div class="modal-right">
-      <button class="btn-like-large" id="modal-like-btn"></button>
-      <div id="modal-title" class="modal-title"></div>
-      <div id="modal-desc" class="modal-desc"></div>
+      <button id="likeBtn" class="btn-like"></button>
+      <h2 id="m-title"></h2>
+      <p id="m-desc"></p>
     </div>
   </div>
 </div>
 
-<div id="toast" class="toast">Đã lưu ❤️</div>
+<div id="toast" class="toast">Saved ❤️</div>
 
 <script>
-const API_URL = 'YOUR_API_URL_HERE';
+/* =========================
+   🔥 THAY API Ở ĐÂY
+========================= */
+const API_URL =
+'https://script.google.com/macros/s/AKfycbyRGBxB-7kvLkfEFeqYfki6T60LfGKvuCrZLfacGh88DqQYsrY7Ye0S2dB_0Fa1nGiBVg/exec';
 
-const grid = document.getElementById('main-grid');
-const modal = document.getElementById('modal-overlay');
-const toast = document.getElementById('toast');
+
+/* ========================= */
+
+const grid = document.getElementById('grid');
 const loading = document.getElementById('loading');
 
-let masonry;
+const modal = document.getElementById('modal');
+const likeBtn = document.getElementById('likeBtn');
+const toast = document.getElementById('toast');
+
 let currentItem = null;
 
-/* ---------------- INIT ---------------- */
-async function init(){
+
+/* ========= Fetch data ========= */
+async function loadData(){
+
   try{
     const res = await fetch(API_URL);
+
+    if(!res.ok) throw new Error(res.status);
+
     const data = await res.json();
-    renderGrid(data);
-  }catch(e){
-    loading.textContent = "❌ Failed to load data";
+
+    render(data);
+
+  }catch(err){
+    console.error(err);
+    loading.innerHTML = "❌ Failed to load API<br>Check console (F12)";
   }
 }
 
-/* ---------------- GRID ---------------- */
-function renderGrid(data){
-  const fragment = document.createDocumentFragment();
+
+/* ========= Render Grid ========= */
+function render(data){
+
+  const frag = document.createDocumentFragment();
 
   data.forEach(item=>{
-    const div = document.createElement('div');
-    div.className='grid-item';
+    const el = document.createElement('div');
+    el.className='grid-item';
 
-    div.innerHTML = `
-      <img src="${item.imageUrl}" loading="lazy" decoding="async">
+    el.innerHTML = `
+      <img src="${item.imageUrl}" loading="lazy">
     `;
 
-    div.addEventListener('click',()=>openModal(item));
-    fragment.appendChild(div);
+    el.onclick = ()=>openModal(item);
+
+    frag.appendChild(el);
   });
 
-  grid.appendChild(fragment);
+  grid.appendChild(frag);
 
-  masonry = new Masonry(grid,{
+  new Masonry(grid,{
     itemSelector:'.grid-item',
     columnWidth:236,
     gutter:20,
@@ -238,21 +229,22 @@ function renderGrid(data){
   });
 
   imagesLoaded(grid,()=>{
-    loading.style.display="none";
+    loading.style.display='none';
     grid.style.visibility='visible';
-    masonry.layout();
   });
 }
 
-/* ---------------- MODAL ---------------- */
+
+/* ========= Modal ========= */
 function openModal(item){
+
   currentItem = item;
 
-  document.getElementById('modal-img').src = item.imageUrl;
-  document.getElementById('modal-title').textContent = item.title;
-  document.getElementById('modal-desc').innerHTML = item.description;
+  document.getElementById('m-img').src = item.imageUrl;
+  document.getElementById('m-title').textContent = item.title;
+  document.getElementById('m-desc').innerHTML = item.description;
 
-  updateLikeButton(item.likes);
+  updateLike();
 
   modal.style.display='flex';
   document.body.style.overflow='hidden';
@@ -263,19 +255,16 @@ function closeModal(){
   document.body.style.overflow='auto';
 }
 
-/* ---------------- LIKE ---------------- */
-const likeBtn = document.getElementById('modal-like-btn');
 
-function updateLikeButton(likes){
-  likeBtn.innerHTML = `<i class="fa-solid fa-heart"></i> ${likes}`;
+/* ========= Like ========= */
+function updateLike(){
+  likeBtn.innerHTML = `<i class="fa-solid fa-heart"></i> ${currentItem.likes}`;
 }
 
-likeBtn.addEventListener('click', async ()=>{
-  likeBtn.classList.add('liked');
+likeBtn.onclick = async ()=>{
 
   currentItem.likes++;
-  updateLikeButton(currentItem.likes);
-
+  updateLike();
   showToast();
 
   try{
@@ -284,26 +273,29 @@ likeBtn.addEventListener('click', async ()=>{
       body:JSON.stringify({id:currentItem.id})
     });
   }catch{}
-});
+};
 
-/* ---------------- TOAST ---------------- */
+
+/* ========= Toast ========= */
 function showToast(){
   toast.classList.add('show');
   setTimeout(()=>toast.classList.remove('show'),1200);
 }
 
-/* ---------------- EVENTS ---------------- */
-modal.addEventListener('click',closeModal);
-document.querySelector('.modal-content').addEventListener('click',e=>e.stopPropagation());
 
-document.querySelector('.close-btn').addEventListener('click',closeModal);
+/* ========= Events ========= */
+modal.onclick = closeModal;
+document.querySelector('.modal-box').onclick=e=>e.stopPropagation();
+document.querySelector('.close').onclick = closeModal;
 
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape') closeModal();
 });
 
-/* ---------------- START ---------------- */
-init();
+
+/* ========= Start ========= */
+loadData();
 </script>
+
 </body>
 </html>
