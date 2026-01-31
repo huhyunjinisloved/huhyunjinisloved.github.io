@@ -3,85 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</title>
+    <title>⋆ ₊⊹ෆ˚₊ huh yunjin is loved ₊˚ෆ⊹₊ ⋆</title>
     
     <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
     <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        :root { 
-            --bg: #f0f9ff; --text: #0369a1; --card: #ffffff; --accent: #0369a1; --sub: #64748b;
-        }
-        body.dark { 
-            --bg: #0f172a; --text: #f1f5f9; --card: #1e293b; --accent: #bae6fd; --sub: #94a3b8;
-        }
+        :root { --bg: #f0f9ff; --text: #0369a1; --card: #ffffff; --accent: #0369a1; }
+        body.dark { --bg: #0f172a; --text: #f1f5f9; --card: #1e293b; --accent: #bae6fd; }
 
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; 
-            background: var(--bg); color: var(--text); transition: 0.4s; 
-        }
-
-        header { text-align: center; padding: 50px 20px; }
-        header h1 { color: var(--accent); margin-bottom: 10px; font-size: 2.5rem; letter-spacing: -1px; }
-
-        .controls { display: flex; justify-content: center; gap: 15px; margin-top: 15px; align-items: center; }
+        body { font-family: -apple-system, sans-serif; margin: 0; background: var(--bg); color: var(--text); transition: 0.4s; overflow-x: hidden; }
+        header { text-align: center; padding: 40px 20px; }
         
-        input#search {
-            padding: 12px 25px; border-radius: 30px; border: 2px solid var(--accent);
-            outline: none; width: 250px; background: var(--card); color: var(--text);
-            transition: 0.3s;
-        }
+        .controls { display: flex; justify-content: center; gap: 15px; margin-top: 15px; align-items: center; }
+        input#search { padding: 12px 25px; border-radius: 30px; border: 2px solid var(--accent); outline: none; width: 250px; background: var(--card); color: var(--text); }
 
+        /* Nút nhạc & Hiệu ứng sóng âm */
+        .music-container { position: relative; display: flex; align-items: center; gap: 8px; }
+        
         .btn-circle {
             border: none; border-radius: 50%; width: 45px; height: 45px;
             cursor: pointer; background: var(--card); color: var(--accent); 
             font-size: 18px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s;
-        }
-        /* Hiệu ứng nhấp nháy khi đang phát nhạc */
-        .btn-circle.playing { 
-            background: var(--accent); color: var(--card); 
-            animation: pulse 2s infinite; 
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(3, 105, 161, 0.4); }
-            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(3, 105, 161, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(3, 105, 161, 0); }
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 2;
         }
 
-        /* Grid Pinterest */
+        .visualizer { display: flex; align-items: flex-end; gap: 2px; height: 20px; visibility: hidden; }
+        .visualizer.active { visibility: visible; }
+        .bar { width: 3px; background: var(--accent); animation: bounce 1s ease-in-out infinite; }
+        .bar:nth-child(2) { animation-delay: 0.2s; }
+        .bar:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce { 0%, 100% { height: 5px; } 50% { height: 20px; } }
+
+        /* Grid & Modal */
         .grid { margin: 20px auto; visibility: hidden; }
-        .grid-item {
-            width: 236px; margin-bottom: 25px; border-radius: 24px;
-            background: var(--card); overflow: hidden; transition: 0.3s;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-        }
+        .grid-item { width: 236px; margin-bottom: 25px; border-radius: 24px; background: var(--card); overflow: hidden; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.05); cursor: pointer; }
         .grid-item:hover { transform: translateY(-10px); }
-        .grid-item img { width: 100%; display: block; border-radius: 24px 24px 0 0; }
+        .grid-item img { width: 100%; display: block; }
         .grid-item .info { padding: 15px; font-weight: 600; text-align: center; color: var(--text); }
 
-        /* Modal */
-        #modal-overlay {
-            position: fixed; inset: 0; display: none; justify-content: center; align-items: center;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 1000;
-        }
-        .modal-box {
-            width: 90%; max-width: 950px; background: var(--card); color: var(--text);
-            border-radius: 35px; display: flex; overflow: hidden; position: relative;
-        }
+        #modal-overlay { position: fixed; inset: 0; display: none; justify-content: center; align-items: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 1000; }
+        .modal-box { width: 90%; max-width: 950px; background: var(--card); border-radius: 35px; display: flex; overflow: hidden; position: relative; }
         .modal-left { flex: 1.2; background: #000; display: flex; align-items: center; justify-content: center; }
         .modal-right { flex: 1; padding: 40px; overflow-y: auto; }
-        
-        .btn-like {
-            background: #fb7185; color: white; border: none; padding: 12px 30px;
-            border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.3s;
-        }
-        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 35px; cursor: pointer; color: var(--sub); }
-
-        /* Jellyfish Animation */
-        .jelly-pop { position: absolute; font-size: 40px; animation: popUp 1s forwards; pointer-events: none; }
-        @keyframes popUp { 0% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
+        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 35px; cursor: pointer; color: #888; }
+        .btn-like { background: #fb7185; color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -90,12 +57,19 @@
     <h1>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</h1>
     <div class="controls">
         <input type="text" id="search" placeholder="Tìm ảnh Yunjin 🪼...">
-        <button id="musicBtn" class="btn-circle" title="Phát nhạc Ash"><i id="musicIcon" class="fa-solid fa-play"></i></button>
-        <button id="darkToggle" class="btn-circle" title="Đổi giao diện"><i class="fa-solid fa-moon"></i></button>
+        
+        <div class="music-container">
+            <button id="musicBtn" class="btn-circle"><i id="musicIcon" class="fa-solid fa-play"></i></button>
+            <div id="visualizer" class="visualizer">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+        </div>
+
+        <button id="darkToggle" class="btn-circle"><i class="fa-solid fa-moon"></i></button>
     </div>
 </header>
 
-<audio id="bgMusic" loop>
+<audio id="bgMusic" loop preload="auto">
     <source src="https://docs.google.com/uc?export=download&id=1L7G71Pzlq4f0w1K4Mks0ly-UaR8DIop3" type="audio/mpeg">
 </audio>
 
@@ -104,13 +78,11 @@
 <div id="modal-overlay">
     <div class="modal-box" id="modalBox">
         <span class="close-btn" id="closeX">&times;</span>
-        <div class="modal-left">
-            <img id="m-img" src="" style="max-width: 100%; max-height: 85vh; object-fit: contain;">
-        </div>
-        <div class="modal-right" id="m-right">
-            <button class="btn-like" id="likeBtn"><i class="fa-solid fa-heart"></i> <span id="l-count">0</span></button>
+        <div class="modal-left"><img id="m-img" src="" style="max-width: 100%; max-height: 85vh; object-fit: contain;"></div>
+        <div class="modal-right">
+            <button class="btn-like" id="likeBtn">❤️ <span id="l-count">0</span></button>
             <h2 id="m-title" style="margin-top:20px"></h2>
-            <div id="m-desc" style="line-height: 1.8;"></div>
+            <div id="m-desc"></div>
         </div>
     </div>
 </div>
@@ -120,12 +92,13 @@
     let allData = [];
     let msnry;
 
+    // Khởi tạo Grid
     async function init() {
         try {
             const res = await fetch(API_URL);
             allData = await res.json();
             render(allData);
-        } catch (e) { console.error("Lỗi API"); }
+        } catch (e) { console.error("Lỗi tải dữ liệu"); }
     }
 
     function render(data) {
@@ -134,7 +107,7 @@
         data.forEach(item => {
             const card = document.createElement('div');
             card.className = 'grid-item';
-            card.innerHTML = `<img src="${item.imageUrl}" loading="lazy"><div class="info">${item.title}</div>`;
+            card.innerHTML = `<img src="${item.imageUrl}"><div class="info">${item.title}</div>`;
             card.onclick = () => openModal(item);
             gridEl.appendChild(card);
         });
@@ -142,67 +115,59 @@
         imagesLoaded(gridEl, () => { gridEl.style.visibility = 'visible'; msnry.layout(); });
     }
 
+    // Xử lý Âm nhạc (Bản fix lỗi không phát được)
+    const musicBtn = document.getElementById('musicBtn');
+    const musicIcon = document.getElementById('musicIcon');
+    const visualizer = document.getElementById('visualizer');
+    const audio = document.getElementById('bgMusic');
+
+    function toggleMusic() {
+        if (audio.paused) {
+            audio.play().then(() => {
+                musicIcon.className = "fa-solid fa-volume-high";
+                visualizer.classList.add('active');
+            }).catch(e => console.log("Yêu cầu tương tác người dùng"));
+        } else {
+            audio.pause();
+            musicIcon.className = "fa-solid fa-play";
+            visualizer.classList.remove('active');
+        }
+    }
+
+    musicBtn.onclick = (e) => {
+        e.stopPropagation();
+        toggleMusic();
+    };
+
+    // Tự động kích hoạt âm nhạc khi người dùng click lần đầu vào bất kỳ đâu
+    document.addEventListener('click', () => {
+        if (audio.paused) {
+            // Chỉ chạy ngầm chuẩn bị, không ép phát ra tiếng ngay để tránh phiền
+            audio.play().then(() => {
+                musicIcon.className = "fa-solid fa-volume-high";
+                visualizer.classList.add('active');
+            }).catch(() => {});
+        }
+    }, { once: true });
+
+    // Các hàm khác
     function openModal(item) {
         document.getElementById('m-img').src = item.imageUrl;
         document.getElementById('m-title').innerText = item.title;
         document.getElementById('m-desc').innerHTML = item.description;
         document.getElementById('l-count').innerText = item.likes || 0;
-
-        document.getElementById('likeBtn').onclick = function() {
-            const count = document.getElementById('l-count');
-            count.innerText = parseInt(count.innerText) + 1;
-            popJelly();
-            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({id: item.id}) });
-            this.disabled = true; this.style.opacity = "0.5";
-        };
-
         document.getElementById('modal-overlay').style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 
-    // Xử lý Âm nhạc
-    const musicBtn = document.getElementById('musicBtn');
-    const musicIcon = document.getElementById('musicIcon');
-    const audio = document.getElementById('bgMusic');
-
-    musicBtn.onclick = () => {
-        if (audio.paused) {
-            audio.play().then(() => {
-                musicBtn.classList.add('playing');
-                musicIcon.className = "fa-solid fa-volume-high";
-            }).catch(() => { 
-                alert("Vui lòng click vào bất kỳ đâu trên trang web rồi nhấn lại nút nhạc nhé!"); 
-            });
-        } else {
-            audio.pause();
-            musicBtn.classList.remove('playing');
-            musicIcon.className = "fa-solid fa-play";
-        }
-    };
-
-    // Dark Mode & Tìm kiếm
-    document.getElementById('darkToggle').onclick = () => {
-        document.body.classList.toggle('dark');
-        const isDark = document.body.classList.contains('dark');
-        document.querySelector('#darkToggle i').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-    };
-
-    document.getElementById('search').oninput = (e) => {
-        const q = e.target.value.toLowerCase();
-        const filtered = allData.filter(x => x.title.toLowerCase().includes(q));
-        render(filtered);
-    };
-
-    function popJelly() {
-        const j = document.createElement('div');
-        j.className = 'jelly-pop'; j.innerHTML = '🪼';
-        document.getElementById('m-right').appendChild(j);
-        setTimeout(() => j.remove(), 1000);
-    }
-
+    document.getElementById('darkToggle').onclick = () => document.body.classList.toggle('dark');
     document.getElementById('closeX').onclick = () => {
         document.getElementById('modal-overlay').style.display = 'none';
         document.body.style.overflow = 'auto';
+    };
+    document.getElementById('search').oninput = (e) => {
+        const filtered = allData.filter(x => x.title.toLowerCase().includes(e.target.value.toLowerCase()));
+        render(filtered);
     };
 
     init();
