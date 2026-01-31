@@ -4,94 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</title>
-
+    
     <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
     <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
         :root { 
-            --bg-sea: #f0f9ff; 
-            --jellyfish-blue: #bae6fd;
-            --deep-ocean: #0369a1;
-            --white: #ffffff;
-            --coral-red: #fb7185; 
+            --bg: #f0f9ff; --text: #0369a1; --card: #ffffff; --accent: #0369a1; --sub: #64748b;
+        }
+        body.dark { 
+            --bg: #0f172a; --text: #f1f5f9; --card: #1e293b; --accent: #bae6fd; --sub: #94a3b8;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            background: var(--bg-sea);
-            color: var(--deep-ocean);
+        body { 
+            font-family: -apple-system, sans-serif; margin: 0; 
+            background: var(--bg); color: var(--text); transition: 0.4s; 
+        }
+
+        header { text-align: center; padding: 50px 20px; }
+        header h1 { color: var(--accent); margin-bottom: 10px; font-size: 2.5rem; }
+
+        /* Controls */
+        .controls { display: flex; justify-content: center; gap: 15px; margin-top: 15px; align-items: center; }
+        
+        input#search {
+            padding: 12px 25px; border-radius: 30px; border: 2px solid var(--accent);
+            outline: none; width: 250px; background: var(--card); color: var(--text);
             transition: 0.3s;
         }
 
-        body.dark {
-            background: #0f172a;
-            color: #e0f2fe;
-        }
-
-        /* Header */
-        header { text-align: center; padding: 40px 20px; }
-        header h1 { margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
-        .controls { display: flex; justify-content: center; gap: 10px; margin-top: 15px; }
-        
-        input#search {
-            padding: 12px 25px; border-radius: 30px; border: 2px solid var(--jellyfish-blue);
-            outline: none; width: 280px; transition: 0.3s;
-        }
-        input#search:focus { border-color: var(--deep-ocean); box-shadow: 0 0 10px rgba(3, 105, 161, 0.1); }
-
-        .toggle-btn {
+        .btn-circle {
             border: none; border-radius: 50%; width: 45px; height: 45px;
-            cursor: pointer; background: var(--jellyfish-blue); color: var(--deep-ocean); font-size: 20px;
+            cursor: pointer; background: var(--card); color: var(--accent); 
+            font-size: 18px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s;
         }
+        .btn-circle.playing { animation: rotate 3s linear infinite; background: var(--accent); color: var(--card); }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         /* Grid Pinterest */
-        .grid { margin: 20px auto; visibility: hidden; }
+        .grid { margin: 20px auto; visibility: hidden; transition: opacity 0.5s; }
         .grid-item {
-            width: 236px; margin-bottom: 20px; border-radius: 24px;
-            background: var(--white); cursor: pointer; overflow: hidden;
-            box-shadow: 0 10px 20px rgba(3, 105, 161, 0.05); transition: 0.3s;
+            width: 236px; margin-bottom: 25px; border-radius: 24px;
+            background: var(--card); overflow: hidden; transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
         }
-        .grid-item:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(3, 105, 161, 0.15); }
-        .grid-item img { width: 100%; display: block; border-radius: 24px 24px 0 0; }
-        .grid-item .info { padding: 12px; font-weight: 600; font-size: 14px; text-align: center; }
+        .grid-item:hover { transform: translateY(-10px); }
+        .grid-item img { width: 100%; display: block; }
+        .grid-item .info { padding: 15px; font-weight: 600; text-align: center; color: var(--text); }
 
-        /* Popup (Modal) */
+        /* Modal */
         #modal-overlay {
             position: fixed; inset: 0; display: none; justify-content: center; align-items: center;
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); z-index: 1000;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 1000;
         }
         .modal-box {
-            width: 90%; max-width: 950px; max-height: 85vh; background: var(--white);
+            width: 90%; max-width: 950px; background: var(--card);
             border-radius: 35px; display: flex; overflow: hidden; position: relative;
-            animation: spring 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: slideUp 0.4s ease;
         }
-        @keyframes spring { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
-        .modal-left { flex: 1.3; background: #000; display: flex; align-items: center; justify-content: center; }
-        .modal-left img { max-width: 100%; max-height: 85vh; object-fit: contain; }
+        .modal-left { flex: 1.2; background: #000; display: flex; align-items: center; justify-content: center; }
+        .modal-right { flex: 1; padding: 40px; display: flex; flex-direction: column; color: var(--text); }
         
-        .modal-right { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; }
-        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 35px; cursor: pointer; color: #64748b; z-index: 10; }
-
         .btn-like {
-            background: var(--coral-red); color: white; border: none;
-            padding: 12px 25px; border-radius: 50px; cursor: pointer;
-            font-weight: bold; font-size: 16px; align-self: flex-start; margin-bottom: 20px;
+            background: #fb7185; color: white; border: none; padding: 12px 30px;
+            border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 16px;
+            align-self: flex-start; margin-bottom: 20px; transition: 0.3s;
         }
+        .btn-like:hover { transform: scale(1.05); background: #f43f5e; }
 
-        /* Loading & Toast */
-        .loader { text-align: center; padding: 100px; font-size: 1.5rem; color: var(--deep-ocean); }
-        .heart-anim { position: absolute; font-size: 40px; animation: pop 0.8s forwards; pointer-events: none; }
-        @keyframes pop { 
-            0% { transform: scale(0.5); opacity: 0; } 
-            50% { transform: scale(1.2); opacity: 1; } 
-            100% { transform: translateY(-80px); opacity: 0; } 
-        }
+        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 35px; cursor: pointer; color: var(--sub); }
 
-        @media (max-width: 768px) { .modal-box { flex-direction: column; } .modal-left img { max-height: 400px; } }
+        /* Jellyfish Heart Pop */
+        .jelly-pop { position: absolute; font-size: 40px; animation: popUp 1s forwards; pointer-events: none; }
+        @keyframes popUp { 0% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
     </style>
 </head>
 <body>
@@ -100,71 +89,61 @@
     <h1>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</h1>
     <div class="controls">
         <input type="text" id="search" placeholder="Tìm ảnh Yunjin 🪼...">
-        <button id="darkToggle" class="toggle-btn"><i class="fa-solid fa-moon"></i></button>
+        <button id="musicBtn" class="btn-circle" title="Phát nhạc nhẹ nhàng"><i class="fa-solid fa-music"></i></button>
+        <button id="darkToggle" class="btn-circle" title="Đổi giao diện"><i class="fa-solid fa-moon"></i></button>
     </div>
 </header>
 
-<div id="loader" class="loader"><i class="fa-solid fa-jellyfish fa-spin"></i>🌊 Sóng đang đưa ảnh tới...</div>
+<audio id="bgMusic" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-lofifive.mp3" type="audio/mpeg">
+</audio>
+
 <div id="grid" class="grid"></div>
 
 <div id="modal-overlay">
-    <span class="close-btn" id="closeX">&times;</span>
     <div class="modal-box" id="modalBox">
+        <span class="close-btn" id="closeX">&times;</span>
         <div class="modal-left">
-            <img id="m-img" src="" alt="Yunjin">
+            <img id="m-img" src="" style="max-width: 100%; max-height: 85vh; object-fit: contain;">
         </div>
         <div class="modal-right" id="m-right">
             <button class="btn-like" id="likeBtn"><i class="fa-solid fa-heart"></i> <span id="l-count">0</span></button>
             <h2 id="m-title" style="margin-top:0"></h2>
-            <div id="m-desc" style="line-height: 1.6; font-size: 16px;"></div>
+            <div id="m-desc" style="line-height: 1.8; opacity: 0.9;"></div>
         </div>
     </div>
 </div>
 
 <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxlSBEyklUE80a87OMfee2VeBKotghDocBpXajsYJuO4pxk8t9Fi0uKRUG3_pnR0YfN2Q/exec';
-    
     let allData = [];
-    const grid = document.getElementById('grid');
-    const loader = document.getElementById('loader');
     let msnry;
 
-    // 1. Tải dữ liệu
+    // 1. Khởi tạo
     async function init() {
         try {
             const res = await fetch(API_URL);
             allData = await res.json();
-            renderGrid(allData);
-        } catch (err) {
-            loader.innerHTML = "❌ Lỗi kết nối API. Hãy kiểm tra lại Google Script!";
-        }
+            render(allData);
+        } catch (e) { console.error("API Error"); }
     }
 
-    // 2. Hiển thị Grid
-    function renderGrid(data) {
-        grid.innerHTML = '';
+    // 2. Render Grid
+    function render(data) {
+        const gridEl = document.getElementById('grid');
+        gridEl.innerHTML = '';
         data.forEach(item => {
             const card = document.createElement('div');
             card.className = 'grid-item';
-            card.innerHTML = `
-                <img src="${item.imageUrl}" loading="lazy" onerror="this.src='https://placehold.co/400x600?text=Lỗi+Ảnh'">
-                <div class="info">${item.title}</div>
-            `;
+            card.innerHTML = `<img src="${item.imageUrl}" loading="lazy"><div class="info">${item.title}</div>`;
             card.onclick = () => openModal(item);
-            grid.appendChild(card);
+            gridEl.appendChild(card);
         });
-
-        // Masonry Layout
-        msnry = new Masonry(grid, { itemSelector: '.grid-item', columnWidth: 236, gutter: 20, isFitWidth: true });
-        imagesLoaded(grid, () => {
-            loader.style.display = 'none';
-            grid.style.visibility = 'visible';
-            msnry.layout();
-        });
+        msnry = new Masonry(gridEl, { itemSelector: '.grid-item', columnWidth: 236, gutter: 20, isFitWidth: true });
+        imagesLoaded(gridEl, () => { gridEl.style.visibility = 'visible'; msnry.layout(); });
     }
 
-    // 3. Modal Logic
-    const overlay = document.getElementById('modal-overlay');
+    // 3. Modal
     function openModal(item) {
         document.getElementById('m-img').src = item.imageUrl;
         document.getElementById('m-title').innerText = item.title;
@@ -174,46 +153,53 @@
         document.getElementById('likeBtn').onclick = function() {
             const count = document.getElementById('l-count');
             count.innerText = parseInt(count.innerText) + 1;
-            popHeart();
+            popJelly();
             fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({id: item.id}) });
-            this.style.opacity = "0.7";
-            this.disabled = true;
+            this.disabled = true; this.style.opacity = "0.5";
         };
 
-        overlay.style.display = 'flex';
+        document.getElementById('modal-overlay').style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() {
-        overlay.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-
-    // 4. Tìm kiếm
-    document.getElementById('search').oninput = (e) => {
-        const q = e.target.value.toLowerCase();
-        const filtered = allData.filter(x => x.title.toLowerCase().includes(q));
-        renderGrid(filtered);
+    // 4. Âm nhạc
+    const musicBtn = document.getElementById('musicBtn');
+    const audio = document.getElementById('bgMusic');
+    musicBtn.onclick = () => {
+        if (audio.paused) {
+            audio.play();
+            musicBtn.classList.add('playing');
+        } else {
+            audio.pause();
+            musicBtn.classList.remove('playing');
+        }
     };
 
-    // 5. Hiệu ứng & Event khác
-    function popHeart() {
-        const h = document.createElement('div');
-        h.className = 'heart-anim';
-        h.innerHTML = '🪼';
-        document.getElementById('m-right').appendChild(h);
-        setTimeout(() => h.remove(), 800);
-    }
-
+    // 5. Dark mode & Search
     document.getElementById('darkToggle').onclick = () => {
         document.body.classList.toggle('dark');
-        const icon = document.querySelector('#darkToggle i');
-        icon.className = document.body.classList.contains('dark') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        const isDark = document.body.classList.contains('dark');
+        document.querySelector('#darkToggle i').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
     };
 
-    overlay.onclick = closeModal;
-    document.getElementById('modalBox').onclick = (e) => e.stopPropagation();
-    document.getElementById('closeX').onclick = closeModal;
+    document.getElementById('search').oninput = (e) => {
+        const filtered = allData.filter(x => x.title.toLowerCase().includes(e.target.value.toLowerCase()));
+        render(filtered);
+    };
+
+    function popJelly() {
+        const j = document.createElement('div');
+        j.className = 'jelly-pop'; j.innerHTML = '🪼';
+        document.getElementById('m-right').appendChild(j);
+        setTimeout(() => j.remove(), 1000);
+    }
+
+    document.getElementById('closeX').onclick = () => {
+        document.getElementById('modal-overlay').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    };
+
+    window.onclick = (e) => { if(e.target == document.getElementById('modal-overlay')) document.getElementById('closeX').click(); }
 
     init();
 </script>
