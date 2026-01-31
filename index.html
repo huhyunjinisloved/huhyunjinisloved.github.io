@@ -19,41 +19,34 @@
         /* Hiệu ứng sứa rơi siêu chậm */
         .jelly-snow { position: fixed; top: -15%; z-index: 9999; user-select: none; pointer-events: none; animation: fall linear forwards; opacity: 0.4; }
         @keyframes fall {
-            0% { transform: translateY(0) rotate(0deg) translateX(0); }
-            50% { transform: translateY(50vh) rotate(180deg) translateX(-20px); }
-            100% { transform: translateY(110vh) rotate(360deg) translateX(0); }
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(110vh) rotate(360deg); }
         }
 
-        header { text-align: center; padding: 45px 20px 10px; }
+        header { text-align: center; padding: 45px 20px 20px; }
         header h1 { font-size: 2.2rem; margin-bottom: 25px; font-weight: 700; color: var(--accent); }
         
-        .controls { display: flex; justify-content: center; gap: 10px; align-items: center; margin-bottom: 20px; }
-        input#search { padding: 10px 20px; border-radius: 25px; border: 2px solid var(--accent); outline: none; width: 220px; background: var(--card); color: var(--text); font-size: 0.9rem; }
+        .controls { display: flex; justify-content: center; gap: 10px; align-items: center; margin-bottom: 40px; }
+        input#search { padding: 10px 20px; border-radius: 25px; border: 2px solid var(--accent); outline: none; width: 220px; background: var(--card); color: var(--text); }
 
         .btn-circle { border: none; border-radius: 50%; width: 42px; height: 42px; cursor: pointer; background: var(--card); color: var(--accent); font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s; }
-        
-        /* Nút tai nghe xoay tròn */
         .rotating { animation: spin 5s linear infinite; background: var(--accent) !important; color: white !important; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* Tabs Navigation */
-        .tabs { display: flex; justify-content: center; gap: 30px; margin-bottom: 30px; }
-        .tab-btn { background: none; border: none; color: var(--text); font-size: 1rem; font-weight: 700; cursor: pointer; opacity: 0.4; transition: 0.3s; padding: 5px 10px; border-bottom: 3px solid transparent; letter-spacing: 1px; }
-        .tab-btn.active { opacity: 1; border-bottom: 3px solid var(--accent); }
-
-        /* Sections & Fade Animation */
-        .section { display: none; opacity: 0; transition: opacity 0.5s ease-in-out; }
-        .section.active { display: block; opacity: 1; }
+        /* Tiêu đề Section */
+        .section-title { text-align: center; font-size: 1.5rem; font-weight: 800; margin: 50px 0 30px; letter-spacing: 2px; position: relative; }
+        .section-title::after { content: ' 🪼'; }
 
         /* Gallery Grid (236px) */
         .grid { margin: 0 auto; visibility: hidden; }
         .grid-item { width: 236px; margin-bottom: 20px; border-radius: 24px; background: var(--card); overflow: hidden; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.05); cursor: pointer; }
         .grid-item img { width: 100%; display: block; }
-        .grid-item .info { padding: 15px; font-weight: 600; text-align: center; font-size: 0.95rem; }
+        .grid-item .info { padding: 15px; font-weight: 600; text-align: center; font-size: 0.9rem; }
 
-        /* Instagram Tab Layout */
-        #insta-grid { margin: 0 auto; max-width: 1200px; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding-bottom: 50px; }
-        .insta-item { width: 330px; background: var(--card); border-radius: 20px; padding: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        /* Instagram Section (Dưới Gallery) */
+        #instagram-section { padding: 40px 10px; background: rgba(255,255,255,0.3); }
+        #insta-grid { margin: 0 auto; max-width: 1200px; display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; }
+        .insta-item { width: 350px; background: var(--card); border-radius: 20px; padding: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
 
         /* Modal */
         #modal-overlay { position: fixed; inset: 0; display: none; justify-content: center; align-items: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 1000; }
@@ -69,14 +62,9 @@
 <header>
     <h1>⋆ ₊⊹ෆ˚₊ huh yunjin is loved ₊˚ෆ⊹₊ ⋆</h1>
     <div class="controls">
-        <input type="text" id="search" placeholder="Finding Yunjinie... 🪼">
-        <button id="musicBtn" class="btn-circle" title="Play Ash"><i class="fa-solid fa-headphones"></i></button>
+        <input type="text" id="search" placeholder="Finding Yunjinie...">
+        <button id="musicBtn" class="btn-circle"><i class="fa-solid fa-headphones"></i></button>
         <button id="darkToggle" class="btn-circle"><i class="fa-solid fa-moon"></i></button>
-    </div>
-
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('gallery')">GALLERY</button>
-        <button class="tab-btn" onclick="switchTab('instagram')">INSTAGRAM</button>
     </div>
 </header>
 
@@ -84,11 +72,11 @@
     <source src="ash.mp3" type="audio/mpeg">
 </audio>
 
-<div id="gallery" class="section active">
-    <div id="grid" class="grid"></div>
-</div>
+<div class="section-title">PHOTO GALLERY</div>
+<div id="grid" class="grid"></div>
 
-<div id="instagram" class="section">
+<div id="instagram-section">
+    <div class="section-title">LATEST FROM INSTAGRAM</div>
     <div id="insta-grid"></div>
 </div>
 
@@ -105,7 +93,6 @@
 </div>
 
 <script>
-    // Tích hợp API mới của bạn
     const API_URL = 'https://script.google.com/macros/s/AKfycbyO9bTTLFM-lR915wDwxMjtbQ87MwEayfKBZQ1FgT5z1DXSmEwca6hW55aM8HwUbI9PDg/exec';
     let allData = { gallery: [], instagram: [] };
     let msnry;
@@ -117,50 +104,37 @@
         jelly.className = 'jelly-snow';
         jelly.style.left = Math.random() * 100 + 'vw';
         jelly.style.animationDuration = Math.random() * 5 + 10 + 's';
-        jelly.style.fontSize = Math.random() * 15 + 15 + 'px';
         document.body.appendChild(jelly);
         setTimeout(() => jelly.remove(), 15000);
-    }, 1200);
-
-    // Chuyển đổi Tab mượt mà
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-        
-        event.currentTarget.classList.add('active');
-        const activeSection = document.getElementById(tabId);
-        activeSection.classList.add('active');
-
-        if (tabId === 'gallery' && msnry) {
-            setTimeout(() => msnry.layout(), 100);
-        }
-        if (tabId === 'instagram') {
-            if (window.instgrm) window.instgrm.Embeds.process();
-        }
-    }
+    }, 1500);
 
     async function init() {
         try {
             const res = await fetch(API_URL);
             const data = await res.json();
-            // Xử lý dữ liệu từ API cấu trúc mới
+            
+            // Xử lý dữ liệu từ 2 sheet
             allData.gallery = data.gallery || [];
             allData.instagram = data.instagram || [];
             
             renderGallery(allData.gallery);
             renderInstagram(allData.instagram);
-        } catch (e) { console.error("API Load Error:", e); }
+        } catch (e) { console.error("API Load Error"); }
     }
 
     function renderGallery(data) {
         const gridEl = document.getElementById('grid');
         gridEl.innerHTML = '';
         data.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'grid-item';
-            card.innerHTML = `<img src="${item.imageUrl}"><div class="info">${item.title}</div>`;
-            card.onclick = () => openModal(item);
-            gridEl.appendChild(card);
+            // Lấy đúng tên thuộc tính imageUrl từ Sheet
+            const img = item.imageUrl || item.imageurl || item.ImageURL;
+            if(img) {
+                const card = document.createElement('div');
+                card.className = 'grid-item';
+                card.innerHTML = `<img src="${img}"><div class="info">${item.title || ''}</div>`;
+                card.onclick = () => openModal(item);
+                gridEl.appendChild(card);
+            }
         });
         
         msnry = new Masonry(gridEl, { itemSelector: '.grid-item', columnWidth: 236, gutter: 20, isFitWidth: true });
@@ -174,54 +148,39 @@
         const instaGrid = document.getElementById('insta-grid');
         instaGrid.innerHTML = '';
         data.forEach(item => {
-            if (item.url) {
+            const url = item.url || item.URL || item.instagramUrl;
+            if (url) {
                 const div = document.createElement('div');
                 div.className = 'insta-item';
-                div.innerHTML = `<blockquote class="instagram-media" data-instgrm-permalink="${item.url}" data-instgrm-version="14" style="width:100%; margin:0; border-radius:15px;"></blockquote>`;
+                // Thêm data-instgrm-captioned để hiện caption
+                div.innerHTML = `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="${url}" data-instgrm-version="14" style="width:100%; margin:0; border:0;"></blockquote>`;
                 instaGrid.appendChild(div);
             }
         });
         if (window.instgrm) window.instgrm.Embeds.process();
     }
 
-    // Music Player Logic
+    // Music Player
     const musicBtn = document.getElementById('musicBtn');
     const audio = document.getElementById('bgMusic');
-
-    musicBtn.onclick = (e) => {
-        e.stopPropagation();
-        if (audio.paused) {
-            audio.play().then(() => {
-                musicBtn.classList.add('rotating');
-            }).catch(() => alert("Click vào trang web trước khi bật nhạc nhé!"));
-        } else {
-            audio.pause();
-            musicBtn.classList.remove('rotating');
+    musicBtn.onclick = () => {
+        if (audio.paused) { 
+            audio.play().then(() => musicBtn.classList.add('rotating')).catch(() => alert("Hãy click vào trang web trước!"));
+        } else { 
+            audio.pause(); musicBtn.classList.remove('rotating'); 
         }
     };
 
-    // Modal & Search & Dark Mode
     function openModal(item) {
-        document.getElementById('m-img').src = item.imageUrl;
-        document.getElementById('m-title').innerText = item.title;
-        document.getElementById('m-desc').innerHTML = item.description;
+        document.getElementById('m-img').src = item.imageUrl || item.imageurl || item.ImageURL;
+        document.getElementById('m-title').innerText = item.title || '';
+        document.getElementById('m-desc').innerHTML = item.description || '';
         document.getElementById('l-count').innerText = item.likes || 0;
         document.getElementById('modal-overlay').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
     }
 
-    document.getElementById('closeX').onclick = () => {
-        document.getElementById('modal-overlay').style.display = 'none';
-        document.body.style.overflow = 'auto';
-    };
-
+    document.getElementById('closeX').onclick = () => document.getElementById('modal-overlay').style.display = 'none';
     document.getElementById('darkToggle').onclick = () => document.body.classList.toggle('dark');
-
-    document.getElementById('search').oninput = (e) => {
-        const val = e.target.value.toLowerCase();
-        const filtered = allData.gallery.filter(x => x.title.toLowerCase().includes(val));
-        renderGallery(filtered);
-    };
 
     init();
 </script>
