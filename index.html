@@ -6,14 +6,13 @@
 
 <title>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</title>
 
+<!-- libs -->
 <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
 <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-:root{
-  --red:#e60023;
-}
+:root{ --red:#e60023; }
 
 /* ========= Base ========= */
 body{
@@ -33,25 +32,24 @@ header{
   padding:20px;
 }
 
-.topbar{
+.controls{
   display:flex;
   justify-content:center;
   gap:10px;
-  margin-top:12px;
+  margin-top:10px;
 }
 
 input{
-  padding:8px 12px;
+  padding:8px 14px;
   border-radius:20px;
   border:1px solid #ddd;
-  outline:none;
 }
 
-.toggle{
-  cursor:pointer;
+button.toggle{
   border:none;
-  padding:8px 12px;
   border-radius:20px;
+  padding:8px 14px;
+  cursor:pointer;
 }
 
 /* ========= Grid ========= */
@@ -80,35 +78,21 @@ input{
   display:block;
 }
 
-/* hover overlay */
+/* hover like overlay */
 .overlay{
   position:absolute;
   inset:0;
+  background:rgba(0,0,0,.4);
   display:flex;
   justify-content:center;
   align-items:center;
-  background:rgba(0,0,0,.4);
-  color:#fff;
+  color:white;
   font-weight:bold;
   opacity:0;
-  transition:.25s;
+  transition:.2s;
 }
 .grid-item:hover .overlay{
   opacity:1;
-}
-
-/* ========= Skeleton ========= */
-.skeleton{
-  width:236px;
-  height:300px;
-  border-radius:16px;
-  background:linear-gradient(90deg,#eee,#ddd,#eee);
-  animation:shine 1.2s infinite;
-  margin-bottom:20px;
-}
-@keyframes shine{
-  0%{background-position:-200px}
-  100%{background-position:200px}
 }
 
 /* ========= Modal ========= */
@@ -127,8 +111,8 @@ input{
   width:90%;
   max-width:900px;
   max-height:90vh;
-  background:white;
-  border-radius:30px;
+  background:#fff;
+  border-radius:28px;
   display:flex;
   overflow:hidden;
   position:relative;
@@ -151,12 +135,13 @@ body.dark .modal-box{
 .modal-right{
   flex:1;
   padding:28px;
+  overflow:auto;
 }
 
 .close{
   position:absolute;
+  top:12px;
   right:18px;
-  top:14px;
   font-size:28px;
   cursor:pointer;
 }
@@ -178,7 +163,7 @@ body.dark .modal-box{
 }
 .heart-pop{
   position:absolute;
-  font-size:30px;
+  font-size:28px;
   animation:pop .7s forwards;
 }
 
@@ -196,6 +181,12 @@ body.dark .modal-box{
   transition:.3s;
 }
 .toast.show{opacity:1}
+
+/* loading */
+.loading{
+  text-align:center;
+  padding:40px;
+}
 </style>
 </head>
 
@@ -204,14 +195,16 @@ body.dark .modal-box{
 <header>
   <h2>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</h2>
 
-  <div class="topbar">
+  <div class="controls">
     <input id="search" placeholder="Search photos...">
     <button id="toggle" class="toggle">🌙</button>
   </div>
 </header>
 
+<div id="loading" class="loading">Loading images...</div>
 <div id="grid" class="grid"></div>
 
+<!-- modal -->
 <div id="modal">
   <div class="modal-box">
     <span class="close">&times;</span>
@@ -227,45 +220,68 @@ body.dark .modal-box{
 <div id="toast" class="toast">Saved ❤️</div>
 
 <script>
-/* ========= API ========= */
+/* ========= CONFIG ========= */
 const API_URL =
 'https://script.google.com/macros/s/AKfycbyRGBxB-7kvLkfEFeqYfki6T60LfGKvuCrZLfacGh88DqQYsrY7Ye0S2dB_0Fa1nGiBVg/exec';
 
-
-const grid = document.getElementById('grid');
-const search = document.getElementById('search');
-
+/* ========= STATE ========= */
 let allData=[];
 let page=0;
 const size=20;
 
+const grid=document.getElementById('grid');
+const search=document.getElementById('search');
+const loading=document.getElementById('loading');
+
 let masonry;
 let currentItem=null;
 
-
-/* ========= Fetch ========= */
+/* ========= FETCH ========= */
 async function load(){
-  const res = await fetch(API_URL);
-  allData = await res.json();
+  try{
+    const res = await fetch(API_URL);
+    allData = await res.json();
 
-  initMasonry();
-  loadMore();
+    initMasonry();
+    loadMore();
+
+  }catch(e){
+    console.error(e);
+    loading.innerHTML="❌ Failed to load API";
+  }
 }
 
-/* ========= Masonry ========= */
+/* ========= MASONRY ========= */
 function initMasonry(){
-  masonry = new Masonry(grid,{
+  masonry=new Masonry(grid,{
     itemSelector:'.grid-item',
     columnWidth:236,
     gutter:20,
     fitWidth:true
   });
   grid.style.visibility='visible';
+  loading.style.display='none';
 }
 
-/* ========= Render chunk ========= */
+/* ========= SEARCH SAFE ========= */
+function filtered(){
+  const q=(search.value||'').toLowerCase();
+
+  if(!q) return allData;
+
+  return allData.filter(x=>
+    (x.title||'').toLowerCase().includes(q)
+  );
+}
+
+/* ========= LOAD CHUNK ========= */
 function loadMore(){
-  const chunk = filtered().slice(page*size,(page+1)*size);
+
+  const list=filtered();
+
+  if(page*size>=list.length) return;
+
+  const chunk=list.slice(page*size,(page+1)*size);
   page++;
 
   chunk.forEach(item=>{
@@ -285,26 +301,21 @@ function loadMore(){
   imagesLoaded(grid,()=>masonry.layout());
 }
 
-/* ========= Search ========= */
-function filtered(){
-  const q = search.value.toLowerCase();
-  return allData.filter(x=>x.title.toLowerCase().includes(q));
-}
-
+/* ========= SEARCH EVENT ========= */
 search.oninput=()=>{
   grid.innerHTML='';
   page=0;
   loadMore();
 };
 
-/* ========= Infinite scroll ========= */
-window.onscroll=()=>{
+/* ========= INFINITE SCROLL ========= */
+window.addEventListener('scroll',()=>{
   if(window.innerHeight+window.scrollY>=document.body.offsetHeight-300){
     loadMore();
   }
-};
+});
 
-/* ========= Modal ========= */
+/* ========= MODAL ========= */
 const modal=document.getElementById('modal');
 const likeBtn=document.getElementById('likeBtn');
 
@@ -312,52 +323,55 @@ function openModal(item){
   currentItem=item;
 
   m-img.src=item.imageUrl;
-  m-title.textContent=item.title;
-  m-desc.innerHTML=item.description;
+  m-title.textContent=item.title||'Untitled';
+  m-desc.innerHTML=item.description||'';
 
   updateLike();
 
   modal.style.display='flex';
 }
 
-function closeModal(){ modal.style.display='none'; }
+function closeModal(){
+  modal.style.display='none';
+}
 
 likeBtn.onclick=()=>{
   currentItem.likes++;
   updateLike();
   popHeart();
-  toastShow();
+  showToast();
 };
 
 function updateLike(){
   likeBtn.innerHTML=`❤️ ${currentItem.likes}`;
 }
 
-/* ========= effects ========= */
+/* ========= EFFECTS ========= */
 function popHeart(){
-  const heart=document.createElement('div');
-  heart.className='heart-pop';
-  heart.textContent='❤️';
-  modal.appendChild(heart);
-  setTimeout(()=>heart.remove(),700);
+  const h=document.createElement('div');
+  h.className='heart-pop';
+  h.textContent='❤️';
+  modal.appendChild(h);
+  setTimeout(()=>h.remove(),700);
 }
 
-function toastShow(){
+function showToast(){
   const t=document.getElementById('toast');
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),1200);
 }
 
-/* ========= Dark mode ========= */
+/* ========= DARK MODE ========= */
 toggle.onclick=()=>{
   document.body.classList.toggle('dark');
 };
 
-/* ========= Events ========= */
+/* ========= EVENTS ========= */
 modal.onclick=closeModal;
 document.querySelector('.modal-box').onclick=e=>e.stopPropagation();
 document.querySelector('.close').onclick=closeModal;
 
+/* ========= START ========= */
 load();
 </script>
 
