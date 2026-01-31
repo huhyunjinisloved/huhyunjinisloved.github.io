@@ -1,46 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8"/>
-<title>Admin CMS</title>
+<meta charset="UTF-8">
+<title>Admin</title>
 
 <style>
-body{font-family:sans-serif;padding:30px}
-input,textarea{width:100%;margin:5px 0;padding:6px}
+body{font-family:sans-serif;padding:20px}
+input,textarea{width:100%;margin:5px 0;padding:8px}
+button{padding:6px 10px;margin:3px}
 .card{border:1px solid #ddd;padding:10px;margin:10px 0}
-.drop{border:2px dashed #aaa;padding:30px;text-align:center}
-.stats{display:flex;gap:20px}
-button{margin:4px}
 </style>
 </head>
 
 <body>
 
 <div id="login">
-<h2>Login</h2>
-<input type="password" id="pass">
+<h3>Login</h3>
+<input id="pass" type="password">
 <button onclick="login()">Login</button>
 </div>
 
 <div id="panel" style="display:none">
 
 <h2>Dashboard</h2>
-<div class="stats">
-<div>Total: <b id="s1"></b></div>
-<div>Likes: <b id="s2"></b></div>
-<div>Top: <b id="s3"></b></div>
-</div>
+<div id="stats"></div>
 
-<h3>Add / Edit</h3>
-
-<div class="drop" id="drop">Drag image here</div>
-
-<input id="link" placeholder="Link or uploaded">
-<input id="title" placeholder="Title">
+<h3>Add Post</h3>
+<input type="file" id="file">
+<input id="title" placeholder="title">
 <textarea id="desc"></textarea>
 <input id="tags" placeholder="tags">
-
-<button onclick="save()">Save</button>
+<button onclick="add()">Add</button>
 
 <hr>
 <div id="list"></div>
@@ -48,90 +38,71 @@ button{margin:4px}
 </div>
 
 <script>
-const API="PASTE_EXEC_URL_HERE";
-let PASSWORD="";
-let editId=null;
+const API="https://script.google.com/macros/s/AKfycbwOSjiZoFntn7fQqMDkM-fQntp_fsQX_xBdiuOOkB97nk6vZdl8kDTd5EQV4AMeWCi4Ow/exec";
+let PASS="";
 
-function login(){
-  PASSWORD=pass.value;
-  login.style.display="none";
-  panel.style.display="block";
-  load();
-  stats();
+async function login(){
+ PASS=pass.value;
+
+ await fetch(API,{method:'POST',mode:'no-cors',
+ body:JSON.stringify({action:'login',pass:PASS})});
+
+ login.style.display="none";
+ panel.style.display="block";
+ load();
 }
 
-drop.ondragover=e=>e.preventDefault();
-drop.ondrop=e=>{
-  e.preventDefault();
-  const f=e.dataTransfer.files[0];
-  const r=new FileReader();
-  r.onload=()=>link.value=r.result;
+async function upload(){
+ const f=file.files[0];
+ const r=new FileReader();
+ return new Promise(res=>{
+  r.onload=async ()=>{
+   const out=await fetch(API,{method:'POST',
+   body:JSON.stringify({action:'upload',image:r.result,pass:PASS})});
+   res(await out.text());
+  };
   r.readAsDataURL(f);
-};
+ });
+}
 
-async function stats(){
-  const r=await fetch(API,{
-    method:"POST",
-    body:JSON.stringify({action:"stats",password:PASSWORD})
-  });
-  const d=await r.json();
-  s1.innerText=d.total;
-  s2.innerText=d.likes;
-  s3.innerText=d.top;
+async function add(){
+ const url=await upload();
+ await fetch(API,{method:'POST',mode:'no-cors',
+ body:JSON.stringify({action:'add',url,title:title.value,desc:desc.value,tags:tags.value,pass:PASS})});
+ load();
 }
 
 async function load(){
-  const r=await fetch(API);
-  const data=await r.json();
-  list.innerHTML="";
+ const r=await fetch(API);
+ const data=await r.json();
 
-  data.forEach(item=>{
-    const d=document.createElement("div");
-    d.className="card";
-    d.innerHTML=`
-      ${item.title}
-      <button onclick='edit(${JSON.stringify(item)})'>Edit</button>
-      <button onclick='del(${item.id})'>Delete</button>
-    `;
-    list.appendChild(d);
-  });
+ stats.innerText="Posts: "+data.length+" | Likes: "+data.reduce((a,b)=>a+b.likes,0);
+
+ list.innerHTML="";
+
+ data.forEach(i=>{
+  const d=document.createElement("div");
+  d.className="card";
+  d.innerHTML=`
+   <img src="${i.imageUrl}" width=100><br>
+   <input value="${i.title}" onchange="edit(${i.id},this.value,'title')">
+   <button onclick="del(${i.id})">Delete</button>
+  `;
+  list.appendChild(d);
+ });
 }
 
-function edit(item){
-  editId=item.id;
-  link.value=item.link;
-  title.value=item.title;
-  desc.value=item.description;
-  tags.value=item.tags;
-}
-
-function save(){
-  const action=editId?"edit":"add";
-
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action,
-      id:editId,
-      password:PASSWORD,
-      link:link.value,
-      title:title.value,
-      description:desc.value,
-      tags:tags.value
-    })
-  });
-
-  editId=null;
-  setTimeout(()=>{load();stats();},800);
+function edit(id,val){
+ fetch(API,{method:'POST',mode:'no-cors',
+ body:JSON.stringify({action:'edit',id,url:'',title:val,desc:'',tags:'',pass:PASS})});
 }
 
 function del(id){
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({action:"delete",id,password:PASSWORD})
-  });
-  setTimeout(()=>{load();stats();},800);
+ fetch(API,{method:'POST',mode:'no-cors',
+ body:JSON.stringify({action:'delete',id,pass:PASS})});
+ load();
 }
 </script>
+
 </body>
 </html>
