@@ -14,41 +14,55 @@
         body.dark { --bg: #0f172a; --text: #f1f5f9; --card: #1e293b; --accent: #bae6fd; }
 
         body { font-family: -apple-system, sans-serif; margin: 0; background: var(--bg); color: var(--text); transition: 0.4s; overflow-x: hidden; }
-        header { text-align: center; padding: 40px 20px; }
         
-        .controls { display: flex; justify-content: center; gap: 15px; margin-top: 15px; align-items: center; }
-        input#search { padding: 12px 25px; border-radius: 30px; border: 2px solid var(--accent); outline: none; width: 250px; background: var(--card); color: var(--text); }
+        /* Căn chỉnh lại Header cho đẹp */
+        header { text-align: center; padding: 60px 20px 30px 20px; }
+        header h1 { font-size: 2.8rem; margin-bottom: 25px; letter-spacing: -1px; }
+        
+        .controls { display: flex; justify-content: center; gap: 20px; align-items: center; flex-wrap: wrap; }
+        
+        input#search { 
+            padding: 14px 25px; border-radius: 30px; border: 2px solid var(--accent); 
+            outline: none; width: 300px; background: var(--card); color: var(--text);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s;
+        }
+        input#search:focus { width: 350px; box-shadow: 0 6px 20px rgba(3, 105, 161, 0.15); }
 
-        /* Nút nhạc & Hiệu ứng sóng âm */
-        .music-container { position: relative; display: flex; align-items: center; gap: 8px; }
-        
+        .music-container { display: flex; align-items: center; gap: 12px; background: var(--card); padding: 5px 15px 5px 5px; border-radius: 40px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
         .btn-circle {
             border: none; border-radius: 50%; width: 45px; height: 45px;
-            cursor: pointer; background: var(--card); color: var(--accent); 
+            cursor: pointer; background: var(--accent); color: white; 
             font-size: 18px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 2;
+            transition: 0.3s;
         }
+        .btn-circle:hover { transform: scale(1.1); }
+        .dark-btn { background: var(--card); color: var(--accent); border: 2px solid var(--accent); }
 
-        .visualizer { display: flex; align-items: flex-end; gap: 2px; height: 20px; visibility: hidden; }
-        .visualizer.active { visibility: visible; }
-        .bar { width: 3px; background: var(--accent); animation: bounce 1s ease-in-out infinite; }
+        /* Sóng âm */
+        .visualizer { display: flex; align-items: flex-end; gap: 3px; height: 18px; width: 20px; }
+        .bar { width: 3px; background: var(--accent); height: 4px; }
+        .playing .bar { animation: bounce 1s ease-in-out infinite; }
         .bar:nth-child(2) { animation-delay: 0.2s; }
         .bar:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes bounce { 0%, 100% { height: 5px; } 50% { height: 20px; } }
+        @keyframes bounce { 0%, 100% { height: 4px; } 50% { height: 18px; } }
 
-        /* Grid & Modal */
-        .grid { margin: 20px auto; visibility: hidden; }
-        .grid-item { width: 236px; margin-bottom: 25px; border-radius: 24px; background: var(--card); overflow: hidden; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.05); cursor: pointer; }
-        .grid-item:hover { transform: translateY(-10px); }
+        /* Grid Layout */
+        .grid { margin: 40px auto; visibility: hidden; }
+        .grid-item { width: 236px; margin-bottom: 25px; border-radius: 24px; background: var(--card); overflow: hidden; transition: 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.05); cursor: pointer; }
+        .grid-item:hover { transform: translateY(-10px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
         .grid-item img { width: 100%; display: block; }
-        .grid-item .info { padding: 15px; font-weight: 600; text-align: center; color: var(--text); }
+        .grid-item .info { padding: 18px; font-weight: 600; text-align: center; }
 
+        /* Modal */
         #modal-overlay { position: fixed; inset: 0; display: none; justify-content: center; align-items: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 1000; }
-        .modal-box { width: 90%; max-width: 950px; background: var(--card); border-radius: 35px; display: flex; overflow: hidden; position: relative; }
+        .modal-box { width: 90%; max-width: 950px; background: var(--card); border-radius: 35px; display: flex; overflow: hidden; position: relative; animation: pop 0.3s ease-out; }
+        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .modal-left { flex: 1.2; background: #000; display: flex; align-items: center; justify-content: center; }
         .modal-right { flex: 1; padding: 40px; overflow-y: auto; }
-        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 35px; cursor: pointer; color: #888; }
-        .btn-like { background: #fb7185; color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; }
+        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 35px; cursor: pointer; color: #888; z-index: 10; }
+        .btn-like { background: #fb7185; color: white; border: none; padding: 12px 35px; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+        .btn-like:hover { background: #f43f5e; transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -58,31 +72,31 @@
     <div class="controls">
         <input type="text" id="search" placeholder="Finding Yunjinie 🪼...">
         
-        <div class="music-container">
+        <div class="music-container" id="musicWrapper">
             <button id="musicBtn" class="btn-circle"><i id="musicIcon" class="fa-solid fa-play"></i></button>
-            <div id="visualizer" class="visualizer">
+            <div class="visualizer">
                 <div class="bar"></div><div class="bar"></div><div class="bar"></div>
             </div>
         </div>
 
-        <button id="darkToggle" class="btn-circle"><i class="fa-solid fa-moon"></i></button>
+        <button id="darkToggle" class="btn-circle dark-btn"><i class="fa-solid fa-moon"></i></button>
     </div>
 </header>
 
-<audio id="bgMusic" loop preload="auto">
+<audio id="bgMusic" loop crossorigin="anonymous">
     <source src="https://docs.google.com/uc?export=download&id=1L7G71Pzlq4f0w1K4Mks0ly-UaR8DIop3" type="audio/mpeg">
 </audio>
 
 <div id="grid" class="grid"></div>
 
 <div id="modal-overlay">
-    <div class="modal-box" id="modalBox">
+    <div class="modal-box">
         <span class="close-btn" id="closeX">&times;</span>
         <div class="modal-left"><img id="m-img" src="" style="max-width: 100%; max-height: 85vh; object-fit: contain;"></div>
         <div class="modal-right">
             <button class="btn-like" id="likeBtn">❤️ <span id="l-count">0</span></button>
-            <h2 id="m-title" style="margin-top:20px"></h2>
-            <div id="m-desc"></div>
+            <h2 id="m-title" style="margin-top:25px; font-size: 1.8rem;"></h2>
+            <div id="m-desc" style="line-height: 1.8; font-size: 1.1rem; opacity: 0.9;"></div>
         </div>
     </div>
 </div>
@@ -92,13 +106,13 @@
     let allData = [];
     let msnry;
 
-    // Khởi tạo Grid
+    // Load Data
     async function init() {
         try {
             const res = await fetch(API_URL);
             allData = await res.json();
             render(allData);
-        } catch (e) { console.error("Lỗi tải dữ liệu"); }
+        } catch (e) { console.error("API Error"); }
     }
 
     function render(data) {
@@ -111,46 +125,41 @@
             card.onclick = () => openModal(item);
             gridEl.appendChild(card);
         });
-        msnry = new Masonry(gridEl, { itemSelector: '.grid-item', columnWidth: 236, gutter: 20, isFitWidth: true });
+        msnry = new Masonry(gridEl, { itemSelector: '.grid-item', columnWidth: 236, gutter: 25, isFitWidth: true });
         imagesLoaded(gridEl, () => { gridEl.style.visibility = 'visible'; msnry.layout(); });
     }
 
-    // Xử lý Âm nhạc (Bản fix lỗi không phát được)
+    // Xử lý Âm nhạc cực mạnh
     const musicBtn = document.getElementById('musicBtn');
+    const musicWrapper = document.getElementById('musicWrapper');
     const musicIcon = document.getElementById('musicIcon');
-    const visualizer = document.getElementById('visualizer');
     const audio = document.getElementById('bgMusic');
 
-    function toggleMusic() {
-        if (audio.paused) {
-            audio.play().then(() => {
-                musicIcon.className = "fa-solid fa-volume-high";
-                visualizer.classList.add('active');
-            }).catch(e => console.log("Yêu cầu tương tác người dùng"));
-        } else {
-            audio.pause();
-            musicIcon.className = "fa-solid fa-play";
-            visualizer.classList.remove('active');
-        }
+    function playMusic() {
+        audio.play().then(() => {
+            musicWrapper.classList.add('playing');
+            musicIcon.className = "fa-solid fa-pause";
+        }).catch(err => {
+            console.log("Cần click để phát nhạc");
+        });
     }
 
     musicBtn.onclick = (e) => {
         e.stopPropagation();
-        toggleMusic();
+        if (audio.paused) {
+            playMusic();
+        } else {
+            audio.pause();
+            musicWrapper.classList.remove('playing');
+            musicIcon.className = "fa-solid fa-play";
+        }
     };
 
-    // Tự động kích hoạt âm nhạc khi người dùng click lần đầu vào bất kỳ đâu
+    // Tự động phát khi người dùng chạm vào bất cứ đâu lần đầu
     document.addEventListener('click', () => {
-        if (audio.paused) {
-            // Chỉ chạy ngầm chuẩn bị, không ép phát ra tiếng ngay để tránh phiền
-            audio.play().then(() => {
-                musicIcon.className = "fa-solid fa-volume-high";
-                visualizer.classList.add('active');
-            }).catch(() => {});
-        }
+        if (audio.paused) playMusic();
     }, { once: true });
 
-    // Các hàm khác
     function openModal(item) {
         document.getElementById('m-img').src = item.imageUrl;
         document.getElementById('m-title').innerText = item.title;
@@ -160,11 +169,15 @@
         document.body.style.overflow = 'hidden';
     }
 
-    document.getElementById('darkToggle').onclick = () => document.body.classList.toggle('dark');
     document.getElementById('closeX').onclick = () => {
         document.getElementById('modal-overlay').style.display = 'none';
         document.body.style.overflow = 'auto';
     };
+
+    document.getElementById('darkToggle').onclick = () => {
+        document.body.classList.toggle('dark');
+    };
+
     document.getElementById('search').oninput = (e) => {
         const filtered = allData.filter(x => x.title.toLowerCase().includes(e.target.value.toLowerCase()));
         render(filtered);
