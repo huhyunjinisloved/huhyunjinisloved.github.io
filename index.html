@@ -1,147 +1,309 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</title>
-    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
-    <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <style>
-        :root { --pink: #ffdae0; --red: #e60023; }
-        body { font-family: -apple-system, sans-serif; margin: 0; background: #fff; }
-        header { text-align: center; padding: 30px; font-size: 26px; font-weight: bold; }
-        
-        /* Grid Pinterest */
-        .grid { margin: 0 auto; visibility: hidden; } /* Ẩn đến khi load xong */
-        .grid-item { 
-            width: 236px; margin-bottom: 20px; border-radius: 16px; 
-            cursor: zoom-in; overflow: hidden; background: #fff;
-            transition: 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .grid-item:hover { filter: brightness(90%); }
-        .grid-item img { width: 100%; display: block; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</title>
 
-        /* MODAL (POPUP) SYSTEM */
-        #modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); display: none; /* Mặc định ẩn */
-            justify-content: center; align-items: center; z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-        .modal-content {
-            background: white; width: 90%; max-width: 800px; max-height: 90vh;
-            border-radius: 32px; display: flex; overflow: hidden; position: relative;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-        .modal-left { flex: 1.2; background: #000; display: flex; align-items: center; }
-        .modal-left img { width: 100%; max-height: 90vh; object-fit: contain; }
-        
-        .modal-right { flex: 1; padding: 40px; display: flex; flex-direction: column; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-title { font-size: 24px; font-weight: bold; }
-        .modal-desc { font-size: 16px; line-height: 1.6; color: #333; margin-top: 15px; }
+<style>
+:root{
+  --pink:#ffdae0;
+  --red:#e60023;
+}
 
-        .close-btn { 
-            position: absolute; top: 20px; right: 20px; font-size: 30px; 
-            cursor: pointer; color: #333; z-index: 10; 
-        }
+body{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  margin:0;
+  background:#fff;
+}
 
-        /* Nút Like trong Modal */
-        .btn-like-large {
-            background: var(--red); color: white; border: none; padding: 12px 25px;
-            border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 16px;
-        }
+/* HEADER */
+header{
+  text-align:center;
+  padding:28px;
+  font-size:26px;
+  font-weight:bold;
+}
 
-        @media (max-width: 700px) {
-            .modal-content { flex-direction: column; }
-            .modal-left img { max-height: 400px; }
-        }
-    </style>
+/* GRID */
+.grid{
+  margin:0 auto;
+  visibility:hidden;
+}
+
+.grid-item{
+  width:236px;
+  margin-bottom:20px;
+  border-radius:16px;
+  overflow:hidden;
+  background:#fff;
+  cursor:zoom-in;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+  transition:.25s;
+}
+.grid-item:hover{
+  transform:translateY(-3px);
+}
+
+.grid-item img{
+  width:100%;
+  display:block;
+}
+
+/* LOADING */
+.loading{
+  text-align:center;
+  padding:40px;
+  font-size:18px;
+}
+
+/* MODAL */
+#modal-overlay{
+  position:fixed;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(5px);
+  z-index:999;
+}
+
+.modal-content{
+  width:90%;
+  max-width:900px;
+  max-height:90vh;
+  background:#fff;
+  border-radius:32px;
+  display:flex;
+  overflow:hidden;
+  animation:fade .25s ease;
+  position:relative;
+}
+
+@keyframes fade{
+  from{opacity:0;transform:scale(.9)}
+  to{opacity:1;transform:scale(1)}
+}
+
+.modal-left{
+  flex:1.2;
+  background:#000;
+  display:flex;
+  align-items:center;
+}
+
+.modal-left img{
+  width:100%;
+  object-fit:contain;
+}
+
+.modal-right{
+  flex:1;
+  padding:36px;
+  overflow:auto;
+}
+
+.modal-title{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.modal-desc{
+  margin-top:15px;
+  color:#333;
+  line-height:1.6;
+}
+
+.close-btn{
+  position:absolute;
+  top:18px;
+  right:22px;
+  font-size:30px;
+  cursor:pointer;
+}
+
+/* LIKE BUTTON */
+.btn-like-large{
+  background:var(--red);
+  color:white;
+  border:none;
+  padding:12px 22px;
+  border-radius:24px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.2s;
+}
+.btn-like-large.liked{
+  background:#ff4b6e;
+}
+
+/* TOAST */
+.toast{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#333;
+  color:white;
+  padding:10px 18px;
+  border-radius:20px;
+  opacity:0;
+  transition:.3s;
+}
+.toast.show{
+  opacity:1;
+}
+
+@media(max-width:700px){
+  .modal-content{flex-direction:column}
+}
+</style>
 </head>
+
 <body>
 
 <header>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</header>
 
+<div id="loading" class="loading">Loading images...</div>
 <div class="grid" id="main-grid"></div>
 
+<!-- MODAL -->
 <div id="modal-overlay">
-    <span class="close-btn">&times;</span>
-    <div class="modal-content" onclick="event.stopPropagation()"> <div class="modal-left">
-            <img id="modal-img" src="" alt="">
-        </div>
-        <div class="modal-right">
-            <div class="modal-header">
-                <button class="btn-like-large" id="modal-like-btn">Lưu / Like</button>
-            </div>
-            <div id="modal-title" class="modal-title"></div>
-            <div id="modal-desc" class="modal-desc"></div>
-        </div>
+  <span class="close-btn">&times;</span>
+  <div class="modal-content">
+    <div class="modal-left">
+      <img id="modal-img">
     </div>
+
+    <div class="modal-right">
+      <button class="btn-like-large" id="modal-like-btn"></button>
+      <div id="modal-title" class="modal-title"></div>
+      <div id="modal-desc" class="modal-desc"></div>
+    </div>
+  </div>
 </div>
 
+<div id="toast" class="toast">Đã lưu ❤️</div>
+
 <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyRGBxB-7kvLkfEFeqYfki6T60LfGKvuCrZLfacGh88DqQYsrY7Ye0S2dB_0Fa1nGiBVg/exec';
-    let allData = [];
+const API_URL = 'YOUR_API_URL_HERE';
 
-    // 1. Lấy dữ liệu
-    async function init() {
-        const response = await fetch(API_URL);
-        allData = await response.json();
-        render(allData);
-    }
+const grid = document.getElementById('main-grid');
+const modal = document.getElementById('modal-overlay');
+const toast = document.getElementById('toast');
+const loading = document.getElementById('loading');
 
-    // 2. Hiển thị Grid
-    function render(data) {
-        const grid = document.getElementById('main-grid');
-        data.forEach(item => {
-            const el = document.createElement('div');
-            el.className = 'grid-item';
-            el.innerHTML = `<img src="${item.imageUrl}" loading="lazy">`;
-            el.onclick = () => openModal(item);
-            grid.appendChild(el);
-        });
+let masonry;
+let currentItem = null;
 
-        const msnry = new Masonry(grid, { itemSelector: '.grid-item', columnWidth: 236, gutter: 20, isFitWidth: true });
-        imagesLoaded(grid, () => {
-            grid.style.visibility = 'visible';
-            msnry.layout();
-        });
-    }
+/* ---------------- INIT ---------------- */
+async function init(){
+  try{
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    renderGrid(data);
+  }catch(e){
+    loading.textContent = "❌ Failed to load data";
+  }
+}
 
-    // 3. Logic Popup
-    const modal = document.getElementById('modal-overlay');
-    
-    function openModal(item) {
-        document.getElementById('modal-img').src = item.imageUrl;
-        document.getElementById('modal-title').innerText = item.title;
-        document.getElementById('modal-desc').innerHTML = item.description; // Hỗ trợ HTML custom
-        document.getElementById('modal-like-btn').innerHTML = `<i class="fa-solid fa-heart"></i> ${item.likes}`;
-        
-        // Gán sự kiện Like cho nút trong Modal
-        document.getElementById('modal-like-btn').onclick = function() {
-            this.disabled = true;
-            this.style.background = "#ccc";
-            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ id: item.id }) });
-        };
+/* ---------------- GRID ---------------- */
+function renderGrid(data){
+  const fragment = document.createDocumentFragment();
 
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Chống cuộn trang khi mở popup
-    }
+  data.forEach(item=>{
+    const div = document.createElement('div');
+    div.className='grid-item';
 
-    // 4. Thoát khi bấm ra ngoài hoặc nút close
-    modal.onclick = closeModal;
-    document.querySelector('.close-btn').onclick = closeModal;
+    div.innerHTML = `
+      <img src="${item.imageUrl}" loading="lazy" decoding="async">
+    `;
 
-    function closeModal() {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
+    div.addEventListener('click',()=>openModal(item));
+    fragment.appendChild(div);
+  });
 
-    init();
+  grid.appendChild(fragment);
+
+  masonry = new Masonry(grid,{
+    itemSelector:'.grid-item',
+    columnWidth:236,
+    gutter:20,
+    fitWidth:true
+  });
+
+  imagesLoaded(grid,()=>{
+    loading.style.display="none";
+    grid.style.visibility='visible';
+    masonry.layout();
+  });
+}
+
+/* ---------------- MODAL ---------------- */
+function openModal(item){
+  currentItem = item;
+
+  document.getElementById('modal-img').src = item.imageUrl;
+  document.getElementById('modal-title').textContent = item.title;
+  document.getElementById('modal-desc').innerHTML = item.description;
+
+  updateLikeButton(item.likes);
+
+  modal.style.display='flex';
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(){
+  modal.style.display='none';
+  document.body.style.overflow='auto';
+}
+
+/* ---------------- LIKE ---------------- */
+const likeBtn = document.getElementById('modal-like-btn');
+
+function updateLikeButton(likes){
+  likeBtn.innerHTML = `<i class="fa-solid fa-heart"></i> ${likes}`;
+}
+
+likeBtn.addEventListener('click', async ()=>{
+  likeBtn.classList.add('liked');
+
+  currentItem.likes++;
+  updateLikeButton(currentItem.likes);
+
+  showToast();
+
+  try{
+    await fetch(API_URL,{
+      method:'POST',
+      body:JSON.stringify({id:currentItem.id})
+    });
+  }catch{}
+});
+
+/* ---------------- TOAST ---------------- */
+function showToast(){
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'),1200);
+}
+
+/* ---------------- EVENTS ---------------- */
+modal.addEventListener('click',closeModal);
+document.querySelector('.modal-content').addEventListener('click',e=>e.stopPropagation());
+
+document.querySelector('.close-btn').addEventListener('click',closeModal);
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeModal();
+});
+
+/* ---------------- START ---------------- */
+init();
 </script>
 </body>
 </html>
