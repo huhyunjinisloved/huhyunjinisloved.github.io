@@ -1,127 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8"/>
-<title>Gallery</title>
+<meta charset="UTF-8">
+<title>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</title>
 
 <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
-<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
 
 <style>
 body{font-family:sans-serif;margin:0}
-header{text-align:center;padding:15px}
-.grid{margin:0 auto;visibility:hidden}
-.grid-item{width:236px;margin-bottom:20px;cursor:pointer}
-.grid-item img{width:100%;border-radius:12px}
-.tag{margin:3px;padding:4px 8px;background:#eee;border-radius:10px;cursor:pointer}
-#modal{position:fixed;inset:0;background:#000a;display:none;justify-content:center;align-items:center}
-.box{background:#fff;padding:20px;width:90%;max-width:700px;border-radius:20px}
-.pager{margin:15px;text-align:center}
-button{padding:5px 12px}
+header{text-align:center;padding:20px;font-size:28px}
+.grid{margin:auto;max-width:1200px}
+.grid-item{width:240px;margin-bottom:15px;border-radius:12px;overflow:hidden;cursor:pointer}
+.grid-item img{width:100%}
+.controls{text-align:center;margin:15px}
+button{padding:6px 12px;margin:5px}
+.tag{background:#eee;padding:3px 8px;margin:2px;border-radius:10px;cursor:pointer}
 </style>
 </head>
 
 <body>
 
-<header>
-<input id="search" placeholder="Search...">
-<div id="tags"></div>
-</header>
+<header>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</header>
 
-<div id="grid" class="grid"></div>
-
-<div class="pager">
+<div class="controls">
+<input id="search" placeholder="search">
 <button onclick="prev()">Prev</button>
-<span id="pageInfo"></span>
 <button onclick="next()">Next</button>
+<div id="tags"></div>
 </div>
 
-<div id="modal" onclick="modal.style.display='none'">
-  <div class="box" onclick="event.stopPropagation()">
-    <img id="mimg" style="width:100%">
-    <h3 id="mtitle"></h3>
-    <p id="mdesc"></p>
-    <button id="mlike"></button>
-  </div>
-</div>
+<div class="grid" id="grid"></div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbxl8ZjA9i-UrdgrTGtREYsiHP0KGuqBieMHGZrklyw7n8CdYvYTcjLrjiEzsTFxjqRuIg/exec";
+const API="https://script.google.com/macros/s/AKfycbwOSjiZoFntn7fQqMDkM-fQntp_fsQX_xBdiuOOkB97nk6vZdl8kDTd5EQV4AMeWCi4Ow/exec";
 
-let allData=[];
-let page=1;
-const perPage=20;
+let data=[],page=0,per=12,filtered=[];
 
 async function load(){
   const r=await fetch(API);
-  allData=await r.json();
-  render();
+  data=await r.json();
+  filtered=data;
   renderTags();
+  render();
 }
 
 function render(){
+  const grid=document.getElementById("grid");
   grid.innerHTML="";
 
-  const start=(page-1)*perPage;
-  const data=allData.slice(start,start+perPage);
+  const slice=filtered.slice(page*per,(page+1)*per);
 
-  pageInfo.innerText=`Page ${page}/${Math.ceil(allData.length/perPage)}`;
-
-  data.forEach(item=>{
+  slice.forEach(item=>{
     const d=document.createElement("div");
     d.className="grid-item";
     d.innerHTML=`<img src="${item.imageUrl}">`;
-    d.onclick=()=>openModal(item);
+    d.onclick=()=>like(item.id);
     grid.appendChild(d);
   });
 
-  imagesLoaded(grid,()=>{
-    new Masonry(grid,{itemSelector:'.grid-item',columnWidth:236,gutter:20,isFitWidth:true});
-    grid.style.visibility='visible';
-  });
+  new Masonry(grid,{itemSelector:'.grid-item',columnWidth:240,gutter:10});
 }
 
-function next(){ if(page*perPage<allData.length){page++;render();}}
-function prev(){ if(page>1){page--;render();}}
+function like(id){
+ fetch(API,{method:'POST',mode:'no-cors',
+ body:JSON.stringify({action:'like',id})});
+}
+
+function next(){page++;render()}
+function prev(){if(page>0)page--;render()}
+
+search.oninput=()=>{
+  const q=search.value.toLowerCase();
+  filtered=data.filter(x=>x.title.toLowerCase().includes(q));
+  page=0;render();
+}
 
 function renderTags(){
-  const s=new Set();
-  allData.forEach(x=>x.tags.split(",").forEach(t=>s.add(t.trim())));
-  tags.innerHTML="";
-  s.forEach(t=>{
-    if(!t)return;
-    const b=document.createElement("span");
-    b.className="tag";
-    b.innerText=t;
-    b.onclick=()=>{allData=allData.filter(x=>x.tags.includes(t));page=1;render();}
-    tags.appendChild(b);
+  const box=document.getElementById("tags");
+  const all=[...new Set(data.flatMap(x=>x.tags.split(",")))];
+
+  box.innerHTML="";
+  all.forEach(t=>{
+    if(!t) return;
+    const s=document.createElement("span");
+    s.className="tag";
+    s.innerText=t;
+    s.onclick=()=>{
+      filtered=data.filter(x=>x.tags.includes(t));
+      page=0;render();
+    };
+    box.appendChild(s);
   });
-}
-
-search.oninput=e=>{
-  const q=e.target.value.toLowerCase();
-  allData=allData.filter(x=>x.title.toLowerCase().includes(q));
-  page=1;
-  render();
-};
-
-function openModal(item){
-  mimg.src=item.imageUrl;
-  mtitle.innerText=item.title;
-  mdesc.innerText=item.description;
-  mlike.innerText="❤ "+item.likes;
-
-  mlike.onclick=()=>{
-    fetch(API,{method:"POST",body:JSON.stringify({action:"like",id:item.id}),mode:"no-cors"});
-    item.likes++;
-    mlike.innerText="❤ "+item.likes;
-  };
-
-  modal.style.display="flex";
 }
 
 setInterval(load,10000);
 load();
 </script>
+
 </body>
 </html>
