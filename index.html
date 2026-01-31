@@ -9,109 +9,139 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        :root { --pink: #ffb7c5; --gray: #efefef; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            margin: 0; background-color: white; 
-        }
-        header { 
-            text-align: center; padding: 30px; 
-            font-size: 24px; font-weight: bold; color: #333;
-        }
-        .grid { margin: 0 auto; width: 95%; }
+        :root { --pink: #ffdae0; --red: #e60023; }
+        body { font-family: -apple-system, sans-serif; margin: 0; background: #fff; }
+        header { text-align: center; padding: 30px; font-size: 26px; font-weight: bold; }
+        
+        /* Grid Pinterest */
+        .grid { margin: 0 auto; visibility: hidden; } /* Ẩn đến khi load xong */
         .grid-item { 
-            width: 236px; margin-bottom: 20px; 
-            border-radius: 16px; overflow: hidden; position: relative;
-            cursor: zoom-in; transition: transform 0.3s;
+            width: 236px; margin-bottom: 20px; border-radius: 16px; 
+            cursor: zoom-in; overflow: hidden; background: #fff;
+            transition: 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .grid-item:hover { transform: scale(1.02); }
-        .grid-item img { width: 100%; display: block; border-radius: 16px; }
+        .grid-item:hover { filter: brightness(90%); }
+        .grid-item img { width: 100%; display: block; }
+
+        /* MODAL (POPUP) SYSTEM */
+        #modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: none; /* Mặc định ẩn */
+            justify-content: center; align-items: center; z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: white; width: 90%; max-width: 800px; max-height: 90vh;
+            border-radius: 32px; display: flex; overflow: hidden; position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .modal-left { flex: 1.2; background: #000; display: flex; align-items: center; }
+        .modal-left img { width: 100%; max-height: 90vh; object-fit: contain; }
         
-        /* Overlay tương tác khi di chuột vào */
-        .overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.2); opacity: 0;
-            display: flex; flex-direction: column; justify-content: space-between;
-            padding: 15px; box-sizing: border-box; transition: 0.3s;
-            border-radius: 16px;
+        .modal-right { flex: 1; padding: 40px; display: flex; flex-direction: column; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 24px; font-weight: bold; }
+        .modal-desc { font-size: 16px; line-height: 1.6; color: #333; margin-top: 15px; }
+
+        .close-btn { 
+            position: absolute; top: 20px; right: 20px; font-size: 30px; 
+            cursor: pointer; color: #333; z-index: 10; 
         }
-        .grid-item:hover .overlay { opacity: 1; }
-        
-        .btn-like {
-            background: #e60023; color: white; border: none;
-            padding: 10px 15px; border-radius: 20px; font-weight: bold;
-            align-self: flex-end; cursor: pointer;
+
+        /* Nút Like trong Modal */
+        .btn-like-large {
+            background: var(--red); color: white; border: none; padding: 12px 25px;
+            border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 16px;
         }
-        .info-bottom { color: white; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
-        .loading { text-align: center; padding: 50px; font-style: italic; color: #888; }
+
+        @media (max-width: 700px) {
+            .modal-content { flex-direction: column; }
+            .modal-left img { max-height: 400px; }
+        }
     </style>
 </head>
 <body>
 
 <header>huh yunjin is loved ₊˚ෆ⊹₊ ⋆</header>
 
-<div id="loader" class="loading">Đang tải những khoảnh khắc của Yunjin...</div>
 <div class="grid" id="main-grid"></div>
 
+<div id="modal-overlay">
+    <span class="close-btn">&times;</span>
+    <div class="modal-content" onclick="event.stopPropagation()"> <div class="modal-left">
+            <img id="modal-img" src="" alt="">
+        </div>
+        <div class="modal-right">
+            <div class="modal-header">
+                <button class="btn-like-large" id="modal-like-btn">Lưu / Like</button>
+            </div>
+            <div id="modal-title" class="modal-title"></div>
+            <div id="modal-desc" class="modal-desc"></div>
+        </div>
+    </div>
+</div>
+
 <script>
-    // THAY LINK GOOGLE SCRIPT API CỦA BẠN VÀO ĐÂY
     const API_URL = 'https://script.google.com/macros/s/AKfycbyRGBxB-7kvLkfEFeqYfki6T60LfGKvuCrZLfacGh88DqQYsrY7Ye0S2dB_0Fa1nGiBVg/exec';
+    let allData = [];
 
-    async function loadGallery() {
-        try {
-            const response = await fetch(API_URL);
-            const data = await response.json();
-            const grid = document.getElementById('main-grid');
-            document.getElementById('loader').style.display = 'none';
-
-            data.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'grid-item';
-                card.innerHTML = `
-                    <img src="${item.imageUrl}" alt="Yunjin">
-                    <div class="overlay">
-                        <button class="btn-like" onclick="likePost(${item.id}, this)">
-                            <i class="fa-solid fa-heart"></i> <span class="count">${item.likes}</span>
-                        </button>
-                        <div class="info-bottom">
-                            <div style="font-weight:bold">${item.title}</div>
-                            <div style="font-size:12px">${item.description}</div>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-
-            // Khởi tạo Masonry sau khi ảnh load xong
-            imagesLoaded(grid, function() {
-                new Masonry(grid, {
-                    itemSelector: '.grid-item',
-                    columnWidth: 236,
-                    gutter: 20,
-                    isFitWidth: true
-                });
-            });
-
-        } catch (error) {
-            console.error("Lỗi tải dữ liệu:", error);
-        }
+    // 1. Lấy dữ liệu
+    async function init() {
+        const response = await fetch(API_URL);
+        allData = await response.json();
+        render(allData);
     }
 
-    // Hàm xử lý Like (Gửi dữ liệu ngược về Sheet)
-    function likePost(id, btn) {
-        const countSpan = btn.querySelector('.count');
-        countSpan.innerText = parseInt(countSpan.innerText) + 1;
-        btn.style.background = "#ffb7c5";
-        btn.disabled = true;
+    // 2. Hiển thị Grid
+    function render(data) {
+        const grid = document.getElementById('main-grid');
+        data.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'grid-item';
+            el.innerHTML = `<img src="${item.imageUrl}" loading="lazy">`;
+            el.onclick = () => openModal(item);
+            grid.appendChild(el);
+        });
 
-        fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify({ id: id })
+        const msnry = new Masonry(grid, { itemSelector: '.grid-item', columnWidth: 236, gutter: 20, isFitWidth: true });
+        imagesLoaded(grid, () => {
+            grid.style.visibility = 'visible';
+            msnry.layout();
         });
     }
 
-    loadGallery();
-</script>
+    // 3. Logic Popup
+    const modal = document.getElementById('modal-overlay');
+    
+    function openModal(item) {
+        document.getElementById('modal-img').src = item.imageUrl;
+        document.getElementById('modal-title').innerText = item.title;
+        document.getElementById('modal-desc').innerHTML = item.description; // Hỗ trợ HTML custom
+        document.getElementById('modal-like-btn').innerHTML = `<i class="fa-solid fa-heart"></i> ${item.likes}`;
+        
+        // Gán sự kiện Like cho nút trong Modal
+        document.getElementById('modal-like-btn').onclick = function() {
+            this.disabled = true;
+            this.style.background = "#ccc";
+            fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ id: item.id }) });
+        };
 
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Chống cuộn trang khi mở popup
+    }
+
+    // 4. Thoát khi bấm ra ngoài hoặc nút close
+    modal.onclick = closeModal;
+    document.querySelector('.close-btn').onclick = closeModal;
+
+    function closeModal() {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    init();
+</script>
 </body>
 </html>
