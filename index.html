@@ -13,23 +13,33 @@
         :root { --bg: #f0f9ff; --text: #0369a1; --card: #ffffff; --accent: #0369a1; }
         body.dark { --bg: #0f172a; --text: #f1f5f9; --card: #1e293b; --accent: #bae6fd; }
 
-        body { font-family: -apple-system, sans-serif; margin: 0; background: var(--bg); color: var(--text); transition: 0.4s; overflow-x: hidden; position: relative; }
+        body { 
+            font-family: -apple-system, sans-serif; 
+            margin: 0; 
+            background: var(--bg); 
+            color: var(--text); 
+            transition: 0.4s; 
+            overflow-x: hidden; 
+            position: relative; 
+        }
         
-        /* Hiệu ứng tuyết sứa */
+        /* Hiệu ứng sứa rơi siêu chậm */
         .jelly-snow {
-            position: fixed; top: -10%; z-index: 9999;
+            position: fixed; top: -15%; z-index: 9999;
             user-select: none; pointer-events: none;
             animation: fall linear forwards;
-            opacity: 0.6;
+            opacity: 0.4;
         }
         @keyframes fall {
-            to { transform: translateY(110vh) rotate(360deg); }
+            0% { transform: translateY(0) rotate(0deg) translateX(0); }
+            50% { transform: translateY(50vh) rotate(180deg) translateX(-20px); }
+            100% { transform: translateY(110vh) rotate(360deg) translateX(0); }
         }
 
-        header { text-align: center; padding: 40px 20px; }
+        header { text-align: center; padding: 45px 20px; }
         header h1 { font-size: 2.2rem; margin-bottom: 25px; font-weight: 700; }
         
-        /* Bar nhỏ gọn & gần nhau hơn */
+        /* Bar điều khiển nhỏ gọn & gần nhau */
         .controls { display: flex; justify-content: center; gap: 10px; align-items: center; }
         
         input#search { 
@@ -43,18 +53,17 @@
             cursor: pointer; background: var(--card); color: var(--accent); 
             font-size: 18px; display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s;
-            position: relative;
         }
 
-        /* Hiệu ứng xoay tròn khi phát nhạc */
+        /* Xoay tròn khi nhạc phát */
         .rotating { 
-            animation: spin 4s linear infinite; 
+            animation: spin 5s linear infinite; 
             background: var(--accent) !important; 
             color: white !important; 
         }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* Kích cỡ giao diện cũ */
+        /* Giao diện 236px */
         .grid { margin: 20px auto; visibility: hidden; }
         .grid-item { 
             width: 236px; margin-bottom: 20px; border-radius: 24px; 
@@ -68,7 +77,7 @@
         #modal-overlay { position: fixed; inset: 0; display: none; justify-content: center; align-items: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 1000; }
         .modal-box { width: 90%; max-width: 950px; background: var(--card); border-radius: 35px; display: flex; overflow: hidden; position: relative; }
         .modal-left { flex: 1.2; background: #000; display: flex; align-items: center; justify-content: center; }
-        .modal-right { flex: 1; padding: 40px; overflow-y: auto; color: var(--text); }
+        .modal-right { flex: 1; padding: 40px; overflow-y: auto; }
         .close-btn { position: absolute; top: 20px; right: 25px; font-size: 35px; cursor: pointer; color: #888; }
         .btn-like { background: #fb7185; color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; }
     </style>
@@ -84,8 +93,8 @@
     </div>
 </header>
 
-<audio id="bgMusic" loop preload="auto" crossorigin="anonymous">
-    <source src="https://docs.google.com/uc?export=download&id=1L7G71Pzlq4f0w1K4Mks0ly-UaR8DIop3" type="audio/mpeg">
+<audio id="bgMusic" loop preload="auto">
+    <source src="ash.mp3" type="audio/mpeg">
 </audio>
 
 <div id="grid" class="grid"></div>
@@ -97,7 +106,7 @@
         <div class="modal-right">
             <button class="btn-like" id="likeBtn">❤️ <span id="l-count">0</span></button>
             <h2 id="m-title" style="margin-top:20px"></h2>
-            <div id="m-desc" style="line-height: 1.6; opacity: 0.9;"></div>
+            <div id="m-desc"></div>
         </div>
     </div>
 </div>
@@ -107,26 +116,25 @@
     let allData = [];
     let msnry;
 
-    // 1. Hiệu ứng sứa rơi
+    // Hiệu ứng sứa rơi chậm (10-15 giây mỗi con)
     function createJelly() {
         const jelly = document.createElement('div');
         jelly.innerHTML = '🪼';
         jelly.className = 'jelly-snow';
         jelly.style.left = Math.random() * 100 + 'vw';
-        jelly.style.animationDuration = Math.random() * 3 + 5 + 's';
-        jelly.style.fontSize = Math.random() * 20 + 10 + 'px';
+        jelly.style.animationDuration = Math.random() * 5 + 10 + 's';
+        jelly.style.fontSize = Math.random() * 15 + 15 + 'px';
         document.body.appendChild(jelly);
-        setTimeout(() => jelly.remove(), 8000);
+        setTimeout(() => jelly.remove(), 15000);
     }
-    setInterval(createJelly, 500);
+    setInterval(createJelly, 1200);
 
-    // 2. Load Grid
     async function init() {
         try {
             const res = await fetch(API_URL);
             allData = await res.json();
             render(allData);
-        } catch (e) { console.error("Error loading data"); }
+        } catch (e) { console.error("API error"); }
     }
 
     function render(data) {
@@ -143,19 +151,17 @@
         imagesLoaded(gridEl, () => { gridEl.style.visibility = 'visible'; msnry.layout(); });
     }
 
-    // 3. Music Logic (Sửa lỗi nút Play)
+    // Music Logic
     const musicBtn = document.getElementById('musicBtn');
     const audio = document.getElementById('bgMusic');
 
     musicBtn.onclick = (e) => {
         e.stopPropagation();
         if (audio.paused) {
-            // Thêm load() để reset stream từ Drive nếu bị kẹt
-            audio.load();
             audio.play().then(() => {
                 musicBtn.classList.add('rotating');
-            }).catch(err => {
-                alert("Vui lòng click bất kỳ đâu trên trang rồi nhấn lại nút tai nghe nhé!");
+            }).catch(() => {
+                alert("Vui lòng click bất kỳ đâu trên web rồi nhấn lại nút tai nghe!");
             });
         } else {
             audio.pause();
@@ -163,7 +169,6 @@
         }
     };
 
-    // 4. Modal & Dark Mode
     function openModal(item) {
         document.getElementById('m-img').src = item.imageUrl;
         document.getElementById('m-title').innerText = item.title;
